@@ -1,0 +1,63 @@
+obInputBasic: &obInputBasic
+  plugin: oracleTableInput
+  config:
+    timeout: 10s
+    pluginConfig:
+      maintainCacheThreads: 4
+      connection:
+        url: ${monagent.ob.monitor.user}/${monagent.ob.monitor.password}@(127.0.0.1:${monagent.ob.sql.port})/admin?interpolateParams=true
+        maxIdle: 2
+        maxOpen: 32
+      defaultConditionValues:
+        ob_svr_ip: ${monagent.host.ip}
+        ob_svr_port: ${monagent.ob.rpc.port}
+        ob_is_rootservice: true
+      collectConfig:
+        - sql: select /*+ MONITOR_AGENT READ_CONSISTENCY(WEAK) */ id, name1, name2, name3, cnt from test_table2
+          name: oracle_db
+          tags:
+            id: id
+            name1: name1
+            name2: name2
+            name3: name3
+          metrics:
+            value: cnt
+
+retagProcessor: &retagProcessor
+  plugin: retagProcessor
+  config:
+    timout: 10s
+    pluginConfig:
+      newTags:
+        app: OB
+        obzone: ${monagent.ob.zone.name}
+        svr_ip: ${monagent.host.ip}
+        ob_cluster_id: ${monagent.ob.cluster.id}
+        ob_cluster_name: ${monagent.ob.cluster.name}
+
+prometheusExporter: &prometheusExporter
+  plugin: prometheusExporter
+  config:
+    timout: 10s
+    pluginConfig:
+      formatType: fmtText
+
+modules:
+  - module: monitor.ob
+    moduleType: monagent.pipeline
+    process: monagent
+    config:
+      name: monitor.ob
+      status: ${monagent.pipeline.ob.status}
+      pipelines:
+        - name: ob_oracle
+          config:
+            scheduleStrategy: trigger
+            exposeUrl: /metrics/ob/oracle
+          structure:
+            inputs:
+              - <<: *obInputBasic
+            processors:
+              - <<: *retagProcessor
+            exporter:
+              <<: *prometheusExporter

@@ -16,6 +16,7 @@ require (
 	github.com/huandu/go-clone v1.3.0
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.12
+	github.com/mattn/go-oci8 v0.1.1
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.1.2
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
