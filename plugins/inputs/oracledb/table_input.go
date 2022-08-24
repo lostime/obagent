@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	_"github.com/mattn/go-oci8"
+	_"go-oci8"
 )
 
 const sampleConfig = `
@@ -211,6 +211,7 @@ func (o *OracleDb) collectData(config *TableCollectConfig) []metric.Metric {
 	var lastRow *map[string]interface{}
 
 	for results.Next() {
+		log.Infof("results: %+v", results) ///
 		resultMap := make(map[string]interface{})
 		lastRow = &resultMap
 		err := results.Scan(valuePtrs...)
@@ -221,6 +222,7 @@ func (o *OracleDb) collectData(config *TableCollectConfig) []metric.Metric {
 		for i, colName := range columns {
 			resultMap[colName] = values[i]
 		}
+		log.Infof("resultMap: %+v", resultMap) ///
 		fields := make(map[string]interface{})
 		tags := make(map[string]string)
 		for metricName, metricColumnName := range config.MetricColumnMap {
@@ -233,6 +235,8 @@ func (o *OracleDb) collectData(config *TableCollectConfig) []metric.Metric {
 					fields[metricName] = v
 
 				}
+			} else {
+				log.Infof("can not found metric: %s", metricColumnName) ///
 			}
 		}
 		for tagName, tagColumnName := range config.TagColumnMap {
@@ -244,7 +248,9 @@ func (o *OracleDb) collectData(config *TableCollectConfig) []metric.Metric {
 				} else {
 					tags[tagName] = v
 				}
-			}
+			} else {
+                log.Infof("can not found tag: %s", tagColumnName) ///
+            }
 		}
 		metricEntry := metric.NewMetric(config.Name, fields, tags, currentTime, metric.Untyped)
 		metrics = append(metrics, metricEntry)

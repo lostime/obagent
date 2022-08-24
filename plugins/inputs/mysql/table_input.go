@@ -96,6 +96,7 @@ type TableInput struct {
 }
 
 func (t *TableInput) initDbConnection() error {
+	log.Info("table input sql url: ", t.Config.DbConnectionConfig.Url) ///	
 	db, err := sql.Open("mysql", t.Config.DbConnectionConfig.Url)
 	if err != nil {
 		return errors.Wrap(err, "sql open")
