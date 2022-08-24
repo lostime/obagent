@@ -5,7 +5,8 @@ obInputBasic: &obInputBasic
     pluginConfig:
       maintainCacheThreads: 4
       connection:
-        url: ${monagent.ob.monitor.user}/${monagent.ob.monitor.password}@(127.0.0.1:${monagent.ob.sql.port})/admin?interpolateParams=true
+        #url: ${monagent.ob.monitor.user}/${monagent.ob.monitor.password}@(127.0.0.1:${monagent.ob.sql.port})/admin?interpolateParams=true
+        url: admin@t_oracle_1/aaAA11__@127.1:2881/admin
         maxIdle: 2
         maxOpen: 32
       defaultConditionValues:

@@ -2,15 +2,17 @@ package oracledb
 
 import (
 	"database/sql"
-	"github.com/oceanbase/obagent/metric"
-	"github.com/oceanbase/obagent/utils"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v3"
+	"strings"
 	"sync"
 	"time"
 
-	_"go-oci8"
+	_ "github.com/mattn/go-oci8"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
+
+	"github.com/oceanbase/obagent/metric"
+	"github.com/oceanbase/obagent/utils"
 )
 
 const sampleConfig = `
@@ -82,7 +84,7 @@ type OracleDb struct {
 	BackgroundTaskWaitGroup sync.WaitGroup
 }
 
-func (o *OracleDb) initDbConnection() error  {
+func (o *OracleDb) initDbConnection() error {
 	db, err := sql.Open("oci8", o.Config.DbConnectionConfig.Url)
 	if err != nil {
 		return errors.Wrap(err, "sql open")
@@ -211,7 +213,6 @@ func (o *OracleDb) collectData(config *TableCollectConfig) []metric.Metric {
 	var lastRow *map[string]interface{}
 
 	for results.Next() {
-		log.Infof("results: %+v", results) ///
 		resultMap := make(map[string]interface{})
 		lastRow = &resultMap
 		err := results.Scan(valuePtrs...)
@@ -220,9 +221,9 @@ func (o *OracleDb) collectData(config *TableCollectConfig) []metric.Metric {
 			continue
 		}
 		for i, colName := range columns {
-			resultMap[colName] = values[i]
+			lowColName := strings.ToLower(colName)
+			resultMap[lowColName] = values[i]
 		}
-		log.Infof("resultMap: %+v", resultMap) ///
 		fields := make(map[string]interface{})
 		tags := make(map[string]string)
 		for metricName, metricColumnName := range config.MetricColumnMap {
@@ -249,8 +250,8 @@ func (o *OracleDb) collectData(config *TableCollectConfig) []metric.Metric {
 					tags[tagName] = v
 				}
 			} else {
-                log.Infof("can not found tag: %s", tagColumnName) ///
-            }
+				log.Infof("can not found tag: %s", tagColumnName) ///
+			}
 		}
 		metricEntry := metric.NewMetric(config.Name, fields, tags, currentTime, metric.Untyped)
 		metrics = append(metrics, metricEntry)
@@ -331,4 +332,3 @@ func (o *OracleDb) Collect() ([]metric.Metric, error) {
 	log.Debug("table input do recv all done")
 	return metrics, nil
 }
-
