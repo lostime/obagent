@@ -44,12 +44,12 @@ prometheusExporter: &prometheusExporter
       formatType: fmtText
 
 modules:
-  - module: monitor.ob
+  - module: monitor.ob.oracle
     moduleType: monagent.pipeline
     process: monagent
     config:
-      name: monitor.ob
-      status: ${monagent.pipeline.ob.status}
+      name: monitor.ob.oracle
+      status: active
       pipelines:
         - name: ob_oracle
           config:
