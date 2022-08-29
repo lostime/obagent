@@ -56,3 +56,13 @@ configs:
     - key: monagent.pipeline.mysql.status
       value: inactive
       valueType: string
+
+    - key: monagent.ob.oracle.user
+      value: {ob.oracle.user}
+      valueType: string
+    - key: monagent.ob.oracle.password
+      value: {ob.oracle.password}
+      valueType: string
+    - key: monagent.ob.oracle.server.name
+      value: {ob.oracle.server.name}
+      valueType: string
