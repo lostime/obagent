@@ -1,11 +1,11 @@
-obInputBasic: &obInputBasic
+obInputOracle: &obInputOracle
   plugin: oracleTableInput
   config:
     timeout: 10s
     pluginConfig:
       maintainCacheThreads: 4
       connection:
-        url: ${monagent.ob.oracle.user}/${monagent.ob.oracle.password}@127.1:${monagent.ob.sql.port}/${monagent.ob.oracle.server.name}
+        url: ${monagent.ob.oracle.user}/${monagent.ob.oracle.password}@127.0.0.1:${monagent.ob.sql.port}/${monagent.ob.oracle.server.name}
         maxIdle: 2
         maxOpen: 32
       defaultConditionValues:
@@ -56,7 +56,7 @@ modules:
             exposeUrl: /metrics/ob/oracle
           structure:
             inputs:
-              - <<: *obInputBasic
+              - <<: *obInputOracle
             processors:
               - <<: *retagProcessor
             exporter:
