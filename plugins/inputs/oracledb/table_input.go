@@ -2,7 +2,6 @@ package oracledb
 
 import (
 	"database/sql"
-	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -86,8 +85,7 @@ type OracleDb struct {
 }
 
 func (o *OracleDb) initDbConnection() error {
-	escapeUrl := url.QueryEscape(o.Config.DbConnectionConfig.Url)
-	db, err := sql.Open("oci8", escapeUrl)
+	db, err := sql.Open("oci8", o.Config.DbConnectionConfig.Url)
 	if err != nil {
 		return errors.Wrap(err, "sql open")
 	}
